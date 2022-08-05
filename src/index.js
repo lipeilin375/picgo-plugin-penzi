@@ -78,7 +78,7 @@ module.exports = (ctx) => {
         name: 'url',
         type: 'input',
         default: userConfig.url,
-        requirede: true,
+        required: true,
         message: '请输入喷子图床POST地址',
         alias: 'POST地址'
       },
@@ -86,7 +86,7 @@ module.exports = (ctx) => {
         name: 'token',
         type: 'input',
         default: userConfig.token || '',
-        requirede: false,
+        required: false,
         message: '请输入喷子图床Token',
         alias: 'Token'
       }
