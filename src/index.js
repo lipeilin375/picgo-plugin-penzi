@@ -92,12 +92,12 @@ module.exports = (ctx) => {
     }
     return [
       {
-        name: 'balabala',
+        name: 'placeHolder',
         type: 'input',
         default: userConfig.placeHolder || '',
         required: false,
-        message: '只是个占位符',
-        alias: '只是个占位符'
+        message: '主要为了好看。。。',
+        alias: '这是一个占位符'
       }
     ]
   }
