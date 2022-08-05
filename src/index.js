@@ -1,19 +1,26 @@
+// const logger = require('@varnxy/logger')
+// logger.setDirectory('/Users/zhang/Work/WorkSpaces/WebWorkSpace/picgo-plugin-penzi/logs')
+// let log = logger('plugin')
+
 module.exports = (ctx) => {
   const register = () => {
     ctx.helper.uploader.register('penzi', {
       handle,
-      name: 'penzi',
+      name: '喷子图床',
       config: config
     })
   }
   const handle = async function (ctx) {
-    let userConfig = ctx.getConfig('picgoBed.penzi')
+    let userConfig = ctx.getConfig('picBed.penzi')
     if (!userConfig) {
-      throw new Error('penzi config is empty')
+      throw new Error('Can\'t find uploader config')
     }
-    const url = userConfig.url
-    const token = userConfig.token
+    const url = 'https://pz.al/api/upload'
+    const paramName = 'image'
     const jsonPath = 'data.url'
+    const customHeader = ''
+    const customBody = ''
+    const placeHolder = userConfig.placeHolder
     try {
       let imgList = ctx.output
       for (let i in imgList) {
@@ -21,24 +28,27 @@ module.exports = (ctx) => {
         if (!image && imgList[i].base64Image) {
           image = Buffer.from(imgList[i].base64Image, 'base64')
         }
-        const postConfig = postOptions(image, token, url, imgList[i].filename)
-        let body = await ctx.request(postConfig)
+        const postConfig = postOptions(image, customHeader, customBody, url, paramName, imgList[i].fileName)
+        let body = await ctx.Request.request(postConfig)
 
-        delete imgList[i].buffer
         delete imgList[i].base64Image
-
-        body = JSON.parse(body)
-        let imgUrl = body
-        for (let field of jsonPath.split('.')) {
-          imgUrl = imgUrl[field]
-        }
-        if (imgUrl) {
-          imgList[i]['imgUrl'] = imgUrl
+        delete imgList[i].buffer
+        if (!jsonPath) {
+          imgList[i]['imgUrl'] = body
         } else {
-          ctx.emit('notification', {
-            title: '返回解析失败',
-            body: 'upload failed'
-          })
+          body = JSON.parse(body)
+          let imgUrl = body
+          for (let field of jsonPath.split('.')) {
+            imgUrl = imgUrl[field]
+          }
+          if (imgUrl) {
+            imgList[i]['imgUrl'] = imgUrl
+          } else {
+            ctx.emit('notification', {
+              title: '返回解析失败',
+              body: '请检查JsonPath设置'
+            })
+          }
         }
       }
     } catch (err) {
@@ -48,52 +58,54 @@ module.exports = (ctx) => {
       })
     }
   }
-  const postOptions = (image, token, url, filename) => {
+
+  const postOptions = (image, customHeader, customBody, url, paramName, fileName) => {
     let headers = {
-      ContentType: 'multipart/form-data',
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
+      contentType: 'multipart/form-data',
+      'User-Agent': 'PicGo'
+    }
+    if (customHeader) {
+      headers = Object.assign(headers, JSON.parse(customHeader))
     }
     let formData = {}
-    formData = Object.assign(formData, JSON.parse(image))
+    if (customBody) {
+      formData = Object.assign(formData, JSON.parse(customBody))
+    }
     const opts = {
       method: 'POST',
       url: url,
-      headers: token,
+      headers: headers,
       formData: formData
     }
-    opts.formData['image'] = {}
-    opts.formData['image'].value = image
-    opts.formData['image'].options = {
-      filename: fileName,
+    opts.formData[paramName] = {}
+    opts.formData[paramName].value = image
+    opts.formData[paramName].options = {
+      filename: fileName
     }
     return opts
   }
+
   const config = ctx => {
-    let userConfig = ctx.getConfig('picgoBed.penzi')
+    let userConfig = ctx.getConfig('picBed.penzi')
     if (!userConfig) {
       userConfig = {}
     }
     return [
       {
-        name: 'url',
+        name: 'balabala',
         type: 'input',
-        default: userConfig.url,
-        required: true,
-        message: '请输入喷子图床POST地址',
-        alias: 'POST地址'
-      },
-      {
-        name: 'token',
-        type: 'input',
-        default: userConfig.token || '',
+        default: userConfig.placeHolder || '',
         required: false,
-        message: '请输入喷子图床Token',
-        alias: 'Token'
+        message: '只是个占位符',
+        alias: '只是个占位符'
       }
     ]
   }
   return {
     uploader: 'penzi',
+    // transformer: 'penzi',
+    // config: config,
     register
+
   }
 }
