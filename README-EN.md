@@ -15,7 +15,7 @@ Language: [English](https://github.com/lipeilin375/picgo-plugin-penzi/README-EN.
 #### Plugin Introduction
 
 - This plugin made by personally, it just for Education
-- This plugin's code is open for everyone (License: [MIT License](https://github.com/lipeilin375/picgo-plugin-penzi/LICENSE))
+- This plugin's code is open source for everyone (License: [MIT License](https://github.com/lipeilin375/picgo-plugin-penzi/LICENSE))
 - This plugin use [Penzi image bed](https://pz.al/) as carrier
 - This plugin does not support uploading by registered users. If you have any suggestions, please [submit a Request](https://github.com/lipeilin375/picgo-plugin-penzi/pulls)
 

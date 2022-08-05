@@ -103,8 +103,6 @@ module.exports = (ctx) => {
   }
   return {
     uploader: 'penzi',
-    // transformer: 'penzi',
-    // config: config,
     register
 
   }
